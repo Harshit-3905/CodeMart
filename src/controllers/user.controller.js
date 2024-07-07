@@ -39,7 +39,19 @@ export const loginUser = asyncHandler(async (req, res) => {
     if (!user || !(await user.isPasswordCorrect(password))) {
         throw new ApiError(401, "Invalid Email or Password");
     }
-    res.status(200).json(
-        new ApiResponse(200, user, "User logged in successfully")
+    const token = await user.generateAuthToken();
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+    return res
+        .status(200)
+        .cookie("AuthToken", token, options)
+        .json(new ApiResponse(200, user, "User logged in successfully"));
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+    res.clearCookie("AuthToken").json(
+        new ApiResponse(200, null, "User logged out successfully")
     );
 });
