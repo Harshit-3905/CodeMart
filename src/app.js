@@ -6,9 +6,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-import categoryRouter from "./routers/category.routes.js";
-import productRouter from "./routers/product.routes.js";
-import userRouter from "./routers/user.routes.js";
+import categoryRouter from "./routes/category.routes.js";
+import productRouter from "./routes/product.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/product", productRouter);
