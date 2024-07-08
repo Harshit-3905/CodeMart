@@ -51,9 +51,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateAuthToken = async function () {
-    return jwt.sign({ id: this._id }, process.env.AUTH_TOKEN_SECRET, {
-        expiresIn: "1d",
-    });
+    return jwt.sign({ id: this._id }, process.env.AUTH_TOKEN_SECRET);
 };
 
 export const User = mongoose.model("User", userSchema);

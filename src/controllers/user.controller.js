@@ -47,11 +47,21 @@ export const loginUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .cookie("AuthToken", token, options)
-        .json(new ApiResponse(200, user, "User logged in successfully"));
+        .json(
+            new ApiResponse(
+                200,
+                { user, AuthToken: token },
+                "User logged in successfully"
+            )
+        );
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
     res.clearCookie("AuthToken").json(
         new ApiResponse(200, null, "User logged out successfully")
     );
+});
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+    res.json(new ApiResponse(200, req.user, "User fetched successfully"));
 });
