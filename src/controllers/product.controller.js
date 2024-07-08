@@ -55,10 +55,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
     );
 });
 
-export const deleteProduct = asyncHandler(async (req, res) => {
+export const getProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    await Product.findByIdAndDelete(id);
-    res.status(200).json(
-        new ApiResponse(200, null, "Product deleted successfully")
-    );
+    const product = await Product.findById(id).populate("category");
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+    res.status(200).json(new ApiResponse(200, product));
 });

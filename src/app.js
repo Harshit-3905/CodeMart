@@ -22,7 +22,7 @@ import productRouter from "./routes/product.routes.js";
 import userRouter from "./routes/user.routes.js";
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/product", productRouter);
 app.use("/api/v1/category", verifyJWT, categoryRouter);
-app.use("/api/v1/product", verifyJWT, productRouter);
 
 export default app;

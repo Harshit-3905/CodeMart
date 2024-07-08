@@ -1,17 +1,18 @@
 import { Router } from "express";
 import {
     addProduct,
-    deleteProduct,
+    getProduct,
     getAllProducts,
     updateProduct,
 } from "../controllers/product.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 router.get("/", getAllProducts);
-router.post("/", upload.single("image"), addProduct);
-router.put("/:id", updateProduct);
-router.delete("/:id", deleteProduct);
+router.get("/:id", verifyJWT, getProduct);
+router.post("/", verifyJWT, upload.single("image"), addProduct);
+router.put("/:id", verifyJWT, updateProduct);
 
 export default router;
