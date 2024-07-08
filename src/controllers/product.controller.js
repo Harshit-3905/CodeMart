@@ -38,7 +38,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
 
 export const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { title, image, details, category } = req.body;
+    const { title, details, category } = req.body;
     if (
         [title, image, details, category].some((field) => field?.trim() === "")
     ) {
@@ -62,4 +62,15 @@ export const getProduct = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Product not found");
     }
     res.status(200).json(new ApiResponse(200, product));
+});
+
+export const deleteProduct = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    if (!deletedProduct) {
+        throw new ApiError(404, "Product not found");
+    }
+    res.status(200).json(
+        new ApiResponse(200, null, "Product deleted successfully")
+    );
 });

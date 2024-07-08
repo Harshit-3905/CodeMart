@@ -1,5 +1,4 @@
 import express from "express";
-import { verifyJWT } from "./middlewares/auth.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -23,6 +22,6 @@ import userRouter from "./routes/user.routes.js";
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
-app.use("/api/v1/category", verifyJWT, categoryRouter);
+app.use("/api/v1/category", categoryRouter);
 
 export default app;
