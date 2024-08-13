@@ -1,16 +1,15 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
 import { verify } from "hono/jwt";
 import { createproductSchema, updateproductSchema } from "codemart-common";
+import getPrismaInstance from "../utils/db";
+import uploadImage from "../utils/imageUpload";
 
 const router = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
     CLOUDINARY_CLOUD_NAME: string;
-    CLOUDINARY_API_KEY: string;
-    CLOUDINARY_API_SECRET: string;
+    UPLOAD_PRESET_NAME: string;
   };
   Variables: {
     userId: string;
@@ -34,9 +33,7 @@ router.use(async (c, next) => {
 });
 
 router.get("/", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const products = await prisma.product.findMany();
     return c.json(products);
@@ -50,29 +47,41 @@ router.get("/", async (c) => {
 });
 
 router.post("/", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
-    const body = await c.req.json();
-    const { success } = createproductSchema.safeParse(body);
+    const body = await c.req.parseBody();
+    const { success, data, error } = createproductSchema.safeParse(body);
     if (!success) {
       c.status(400);
       return c.json({
         message: "Invalid data",
+        error,
       });
+    }
+    const { name, description, price, categoryId } = data;
+    let url = "";
+    if (body.image) {
+      url = await uploadImage(
+        c.env.CLOUDINARY_CLOUD_NAME,
+        c.env.UPLOAD_PRESET_NAME,
+        body.image
+      );
     }
     const product = await prisma.product.create({
       data: {
-        name: body.name,
-        description: body.description,
-        price: parseInt(body.price),
-        image: body.url,
+        name,
+        description,
+        price: parseInt(price),
+        image: url,
+        category: {
+          connect: {
+            id: categoryId,
+          },
+        },
       },
     });
     c.status(201);
-    return c.json(product);
+    return c.json({ message: "Product created", product });
   } catch (e) {
     c.status(500);
     return c.json({
@@ -83,9 +92,7 @@ router.post("/", async (c) => {
 });
 
 router.get("/:id", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const id = c.req.param("id");
     const product = await prisma.product.findUnique({
@@ -103,17 +110,16 @@ router.get("/:id", async (c) => {
 });
 
 router.put("/:id", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
-    const { success } = updateproductSchema.safeParse(body);
+    const { success, error } = updateproductSchema.safeParse(body);
     if (!success) {
       c.status(400);
       return c.json({
         message: "Invalid data",
+        Error: error,
       });
     }
     const product = await prisma.product.update({
@@ -121,10 +127,7 @@ router.put("/:id", async (c) => {
         id: id,
       },
       data: {
-        name: body.name,
-        description: body.description,
-        price: parseInt(body.price),
-        image: body.image,
+        ...body,
       },
     });
     console.log(body);
@@ -138,9 +141,7 @@ router.put("/:id", async (c) => {
 });
 
 router.delete("/:id", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const id = c.req.param("id");
     const product = await prisma.product.delete({
