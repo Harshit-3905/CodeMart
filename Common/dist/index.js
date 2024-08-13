@@ -14,12 +14,12 @@ exports.loginSchema = zod_1.z.object({
 exports.createproductSchema = zod_1.z.object({
     name: zod_1.z.string(),
     description: zod_1.z.string(),
-    price: zod_1.z.number(),
-    image: zod_1.z.string(),
+    price: zod_1.z.string(),
+    categoryId: zod_1.z.string(),
 });
 exports.updateproductSchema = zod_1.z.object({
     name: zod_1.z.string().optional(),
     description: zod_1.z.string().optional(),
-    price: zod_1.z.number().optional(),
-    image: zod_1.z.string().optional(),
+    price: zod_1.z.string().optional(),
+    categoryId: zod_1.z.string().optional(),
 });

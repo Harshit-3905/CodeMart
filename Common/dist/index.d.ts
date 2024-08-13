@@ -27,34 +27,34 @@ export type LoginSchema = z.infer<typeof loginSchema>;
 export declare const createproductSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodString;
-    price: z.ZodNumber;
-    image: z.ZodString;
+    price: z.ZodString;
+    categoryId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     name: string;
     description: string;
-    price: number;
-    image: string;
+    price: string;
+    categoryId: string;
 }, {
     name: string;
     description: string;
-    price: number;
-    image: string;
+    price: string;
+    categoryId: string;
 }>;
 export declare const updateproductSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodString>;
-    price: z.ZodOptional<z.ZodNumber>;
-    image: z.ZodOptional<z.ZodString>;
+    price: z.ZodOptional<z.ZodString>;
+    categoryId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     name?: string | undefined;
     description?: string | undefined;
-    price?: number | undefined;
-    image?: string | undefined;
+    price?: string | undefined;
+    categoryId?: string | undefined;
 }, {
     name?: string | undefined;
     description?: string | undefined;
-    price?: number | undefined;
-    image?: string | undefined;
+    price?: string | undefined;
+    categoryId?: string | undefined;
 }>;
 export type CreateProductSchema = z.infer<typeof createproductSchema>;
 export type UpdateProductSchema = z.infer<typeof updateproductSchema>;

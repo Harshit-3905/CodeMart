@@ -17,14 +17,14 @@ export type LoginSchema = z.infer<typeof loginSchema>;
 export const createproductSchema = z.object({
   name: z.string(),
   description: z.string(),
-  price: z.number(),
-  image: z.string(),
+  price: z.string(),
+  categoryId: z.string(),
 });
 export const updateproductSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
-  price: z.number().optional(),
-  image: z.string().optional(),
+  price: z.string().optional(),
+  categoryId: z.string().optional(),
 });
 
 export type CreateProductSchema = z.infer<typeof createproductSchema>;
