@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { verify } from "hono/jwt";
+import { createproductSchema, updateproductSchema } from "codemart-common";
 
 const router = new Hono<{
   Bindings: {
@@ -55,6 +56,13 @@ router.post("/", async (c) => {
 
   try {
     const body = await c.req.json();
+    const { success } = createproductSchema.safeParse(body);
+    if (!success) {
+      c.status(400);
+      return c.json({
+        message: "Invalid data",
+      });
+    }
     const product = await prisma.product.create({
       data: {
         name: body.name,
@@ -101,6 +109,13 @@ router.put("/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
+    const { success } = updateproductSchema.safeParse(body);
+    if (!success) {
+      c.status(400);
+      return c.json({
+        message: "Invalid data",
+      });
+    }
     const product = await prisma.product.update({
       where: {
         id: id,
@@ -128,7 +143,6 @@ router.delete("/:id", async (c) => {
   }).$extends(withAccelerate());
   try {
     const id = c.req.param("id");
-    console.log(id);
     const product = await prisma.product.delete({
       where: {
         id: id,
