@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { loginSchema, signupSchema } from "codemart-common";
+import getPrismaInstance from "../utils/db";
+import { hashPassword, verifyPassword } from "../utils/hashPassword";
 
 const router = new Hono<{
   Bindings: {
@@ -12,9 +12,7 @@ const router = new Hono<{
 }>();
 
 router.post("/signup", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const body = await c.req.json();
     const { success } = signupSchema.safeParse(body);
@@ -23,21 +21,17 @@ router.post("/signup", async (c) => {
         message: "Invalid data",
       });
     }
-    const userExist = await prisma.user.findUnique({
-      where: {
-        email: body.email,
-      },
-    });
-    if (userExist) {
-      return c.json({
-        message: "User already exist",
-      });
-    }
+    const hashedPassword = await hashPassword(body.password);
     const user = await prisma.user.create({
       data: {
         name: body.name,
         email: body.email,
-        password: body.password,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
       },
     });
     const payload = {
@@ -57,9 +51,7 @@ router.post("/signup", async (c) => {
 });
 
 router.post("/login", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
     const body = await c.req.json();
     const { success } = loginSchema.safeParse(body);
@@ -78,7 +70,8 @@ router.post("/login", async (c) => {
         message: "User not found",
       });
     }
-    if (user.password !== body.password) {
+    const isPasswordSame = await verifyPassword(user.password, body.password);
+    if (!isPasswordSame) {
       return c.json({
         message: "Invalid password",
       });
@@ -89,7 +82,9 @@ router.post("/login", async (c) => {
     const secret = c.env.JWT_SECRET;
     const token = await sign(payload, secret);
     return c.json({
-      user,
+      id: user.id,
+      name: user.name,
+      email: user.email,
       token,
     });
   } catch (e) {
