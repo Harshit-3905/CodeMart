@@ -1,13 +1,36 @@
 import { Hono } from "hono";
+import { verify } from "hono/jwt";
 import getPrismaInstance from "../utils/db";
 
 const router = new Hono<{
   Bindings: {
     DATABASE_URL: string;
+    JWT_SECRET: string;
   };
-  Variables: {};
+  Variables: {
+    userId: string;
+  };
 }>();
 
+// Middleware to check authentication for all routes
+// router.use(async (c, next) => {
+//   const authHeader = c.req.header("Authorization");
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     return c.json({ error: "Unauthorized" }, 401);
+//   }
+
+//   const token = authHeader.split(" ")[1];
+//   try {
+//     const payload = await verify(token, c.env.JWT_SECRET);
+//     c.set("userId", payload.id as string);
+//   } catch (error) {
+//     return c.json({ error: "Invalid token" }, 401);
+//   }
+
+//   await next();
+// });
+
+// Get all categories
 router.get("/", async (c) => {
   const prisma = getPrismaInstance(c.env.DATABASE_URL);
   try {
@@ -17,76 +40,9 @@ router.get("/", async (c) => {
         name: true,
       },
     });
-    return c.json(categories);
+    return c.json(categories, 200);
   } catch (e) {
-    c.status(500);
-    return c.json({
-      message: "Error",
-      Error: e,
-    });
-  }
-});
-
-router.post("/", async (c) => {
-  const prisma = getPrismaInstance(c.env.DATABASE_URL);
-  try {
-    const body = await c.req.json();
-    const { name } = body;
-    if (!name) {
-      c.status(400);
-      return c.json({
-        message: "Invalid data",
-      });
-    }
-    const category = await prisma.category.create({
-      data: {
-        name,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-    return c.json(category);
-  } catch (e) {
-    c.status(500);
-    return c.json({
-      message: "Error",
-      Error: e,
-    });
-  }
-});
-
-router.put("/:id", async (c) => {
-  const prisma = getPrismaInstance(c.env.DATABASE_URL);
-  try {
-    const body = await c.req.json();
-    const { name } = body;
-    if (!name) {
-      c.status(400);
-      return c.json({
-        message: "Invalid data",
-      });
-    }
-    const category = await prisma.category.update({
-      where: {
-        id: c.req.param("id"),
-      },
-      data: {
-        name,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-    return c.json(category);
-  } catch (e) {
-    c.status(500);
-    return c.json({
-      message: "Error",
-      Error: e,
-    });
+    return c.json({ message: "Error fetching categories" }, 500);
   }
 });
 
