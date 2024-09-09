@@ -4,35 +4,51 @@ import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
+
   const SignInHandler = async () => {
     setLoading(true);
+    setError("");
     try {
-      const { data } = await axios.post(
+      const response = await axios.post(
         "http://localhost:8787/api/v1/user/login",
         {
           email,
           password,
         }
       );
-      console.log(data);
-      localStorage.setItem("token", data.token);
-      setLoading(false);
-      navigate("/");
+      if (response.status === 200) {
+        login(response.data.token);
+        navigate("/products");
+      } else {
+        setError(response.data.message || "An error occurred during sign in");
+      }
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error) && error.response) {
+        setError(
+          error.response.data.message || "An error occurred during sign in"
+        );
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-slate-600 text-white">
+    <div className="w-full min-h-[80vh] flex items-center justify-center bg-slate-600 text-white">
       <div className="flex flex-col bg-black p-5 gap-3 rounded-xl">
+        {error && <div className="text-red-500 text-center">{error}</div>}
         <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -55,11 +71,11 @@ const SignInPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-3">
           <Button
             onClick={SignInHandler}
             disabled={loading}
-            className="bg-green-700"
+            className="bg-green-700 w-[300px]"
           >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -67,6 +83,12 @@ const SignInPage = () => {
               "Sign In"
             )}
           </Button>
+        </div>
+        <div className="flex justify-center">
+          Don't have an account ? &nbsp;
+          <Link to="/signup" className="text-red-500">
+            Sign up
+          </Link>
         </div>
       </div>
     </div>
