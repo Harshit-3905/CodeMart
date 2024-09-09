@@ -1,58 +1,117 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const products = [
-  {
-    id: 1,
-    name: "Debug Duck",
-    price: 15.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-  {
-    id: 2,
-    name: "Git Commit Mug",
-    price: 12.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-  {
-    id: 3,
-    name: "React Hoodie",
-    price: 39.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-  {
-    id: 4,
-    name: "Python Socks",
-    price: 9.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-  {
-    id: 5,
-    name: "JavaScript Sticker Pack",
-    price: 4.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-  {
-    id: 6,
-    name: "Code & Coffee T-Shirt",
-    price: 19.99,
-    image: "/placeholder.svg?height=200&width=200",
-    description: "Rubber duck for debugging code.",
-  },
-];
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  category: {
+    id: number;
+    name: string;
+  };
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 export default function Component() {
   const [priceRange, setPriceRange] = useState([0, 50]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/signin");
+          return;
+        }
+
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          axios.get("http://localhost:8787/api/v1/products", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("http://localhost:8787/api/v1/categories", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setProducts(productsResponse.data);
+        setCategories(categoriesResponse.data);
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/signin");
+        } else {
+          setError("Failed to fetch data");
+          console.error("Error fetching data:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  const applyFilters = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/signin");
+        return;
+      }
+
+      const response = await axios.get(
+        "http://localhost:8787/api/v1/products",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            categories: selectedCategories.join(","),
+            minPrice: priceRange[0],
+            maxPrice: priceRange[1],
+          },
+        }
+      );
+
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error applying filters:", error);
+      setError("Failed to apply filters");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -64,19 +123,26 @@ export default function Component() {
                 <CardTitle>Categories</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {["Apparel", "Accessories", "Drinkware", "Stickers"].map(
-                  (category) => (
-                    <div key={category} className="flex items-center space-x-2">
-                      <Checkbox id={category} />
-                      <label
-                        htmlFor={category}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {category}
-                      </label>
-                    </div>
-                  )
-                )}
+                {categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox
+                      id={category.name}
+                      checked={selectedCategories.includes(category.name)}
+                      onCheckedChange={() =>
+                        handleCategoryChange(category.name)
+                      }
+                    />
+                    <label
+                      htmlFor={category.name}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {category.name}
+                    </label>
+                  </div>
+                ))}
               </CardContent>
             </Card>
             <Card>
@@ -97,6 +163,7 @@ export default function Component() {
                 </div>
               </CardContent>
             </Card>
+            <Button onClick={applyFilters}>Apply Filters</Button>
           </aside>
 
           <main className="flex-1 space-y-6">
