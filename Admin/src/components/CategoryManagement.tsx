@@ -119,16 +119,16 @@ const CategoryManagement: React.FC = () => {
             : "Add Category"}
         </button>
       </form>
-      <ul className="mt-6 divide-y divide-gray-200">
+      <ul className="mt-6 flex flex-col gap-2">
         {fetching ? (
           <Loading />
         ) : (
           categories.map((category) => (
             <li
               key={category.id}
-              className="py-4 flex justify-between items-center"
+              className="py-2 flex justify-between items-center bg-white px-4"
             >
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-md font-medium text-gray-900">
                 {category.name}
               </span>
               <div>
@@ -137,13 +137,13 @@ const CategoryManagement: React.FC = () => {
                     setEditingCategory(category);
                     setNewCategory(category.name);
                   }}
-                  className="mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(category.id)}
-                  className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
                   Delete
                 </button>
