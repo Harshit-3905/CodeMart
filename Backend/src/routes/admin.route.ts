@@ -137,7 +137,8 @@ router.put("/product/:id", async (c) => {
   const prisma = getPrismaInstance(c.env.DATABASE_URL);
   const id = c.req.param("id");
   const body = await c.req.parseBody();
-  if (body.image) {
+  console.log(body);
+  if (body.image && typeof body.image !== "string") {
     const uploadedImage = await uploadImage(
       c.env.CLOUDINARY_CLOUD_NAME,
       c.env.UPLOAD_PRESET_NAME,
@@ -148,9 +149,12 @@ router.put("/product/:id", async (c) => {
     }
     body.image = uploadedImage;
   }
-  const { success, data, error } = updateproductSchema.safeParse(body);
+  const { success, data, error } = updateproductSchema.safeParse({
+    ...body,
+    stock: parseInt(body.stock as string),
+  });
   if (!success) {
-    return c.json({ message: "Invalid data provided" }, 400);
+    return c.json({ message: "Invalid data provided", error }, 400);
   }
   const { name, description, price, categoryId, stock, image } = data;
 
