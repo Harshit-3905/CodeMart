@@ -87,7 +87,7 @@ const CategoryManagement: React.FC = () => {
   };
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+    <div className="bg-orange-500 shadow overflow-hidden sm:rounded-lg p-6">
       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
         Category Management
       </h3>
@@ -95,7 +95,7 @@ const CategoryManagement: React.FC = () => {
         <div>
           <label
             htmlFor="categoryName"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Category Name
           </label>
@@ -104,7 +104,7 @@ const CategoryManagement: React.FC = () => {
             id="categoryName"
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <button

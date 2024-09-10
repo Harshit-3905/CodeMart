@@ -25,6 +25,7 @@ const ProductManagement: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [fetching, setFetching] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -82,6 +83,7 @@ const ProductManagement: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const token = localStorage.getItem("adminToken");
       const formData = new FormData();
@@ -124,6 +126,7 @@ const ProductManagement: React.FC = () => {
     } catch (error) {
       console.error("Failed to save product", error);
     }
+    setLoading(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -141,7 +144,7 @@ const ProductManagement: React.FC = () => {
   };
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+    <div className="bg-orange-500 shadow overflow-hidden sm:rounded-lg p-6">
       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
         Product Management
       </h3>
@@ -149,7 +152,7 @@ const ProductManagement: React.FC = () => {
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Product Name
           </label>
@@ -165,7 +168,7 @@ const ProductManagement: React.FC = () => {
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Description
           </label>
@@ -180,7 +183,7 @@ const ProductManagement: React.FC = () => {
         <div>
           <label
             htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Price
           </label>
@@ -190,13 +193,13 @@ const ProductManagement: React.FC = () => {
             name="price"
             value={editingProduct?.price || newProduct.price || ""}
             onChange={handleInputChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 p-2 block w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
           <label
             htmlFor="stock"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Stock
           </label>
@@ -206,13 +209,13 @@ const ProductManagement: React.FC = () => {
             name="stock"
             value={editingProduct?.stock || newProduct.stock || ""}
             onChange={handleInputChange}
-            className="mt-1 p-2  block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 p-2  block w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
           <label
             htmlFor="image"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Product Image
           </label>
@@ -221,7 +224,7 @@ const ProductManagement: React.FC = () => {
             id="image"
             name="image"
             onChange={handleImageChange}
-            className="mt-1 block w-full text-sm text-gray-500
+            className="mt-1 block w-full text-sm text-white font-semibold
               file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0
               file:text-sm file:font-semibold
@@ -232,7 +235,7 @@ const ProductManagement: React.FC = () => {
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-black"
           >
             Category
           </label>
@@ -255,7 +258,11 @@ const ProductManagement: React.FC = () => {
           type="submit"
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          {editingProduct ? "Update" : "Add"} Product
+          {loading
+            ? "Loading..."
+            : editingProduct
+            ? "Update Product"
+            : "Add Product"}
         </button>
       </form>
       <ul className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

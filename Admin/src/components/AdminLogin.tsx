@@ -16,8 +16,9 @@ const AdminLogin: React.FC = () => {
     try {
       await login(email, password);
       navigate("/dashboard");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Invalid credentials" + err);
+      setError("Invalid Credentials");
     }
     setLoading(false);
   };
@@ -28,7 +29,9 @@ const AdminLogin: React.FC = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Admin Login
         </h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && (
+          <p className="text-white text-center text-sm mb-4">{error}</p>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
