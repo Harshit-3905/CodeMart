@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "./Loading";
+import { BACKEND_URL } from "../constants/api";
 
 interface Category {
   id: string;
@@ -22,14 +23,11 @@ const CategoryManagement: React.FC = () => {
     setFetching(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(
-        "http://localhost:8787/api/v1/category",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BACKEND_URL}/api/v1/category`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCategories(response.data);
     } catch (error) {
       console.error("Failed to fetch categories", error);
@@ -44,7 +42,7 @@ const CategoryManagement: React.FC = () => {
       const token = localStorage.getItem("adminToken");
       if (editingCategory) {
         await axios.put(
-          `http://localhost:8787/api/v1/admin/category/${editingCategory.id}`,
+          `${BACKEND_URL}/api/v1/admin/category/${editingCategory.id}`,
           { name: newCategory },
           {
             headers: {
@@ -54,7 +52,7 @@ const CategoryManagement: React.FC = () => {
         );
       } else {
         await axios.post(
-          "http://localhost:8787/api/v1/admin/category",
+          `${BACKEND_URL}/api/v1/admin/category`,
           {
             name: newCategory,
           },
@@ -77,7 +75,7 @@ const CategoryManagement: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`http://localhost:8787/api/v1/admin/category/${id}`, {
+      await axios.delete(`${BACKEND_URL}/api/v1/admin/category/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,9 +121,7 @@ const CategoryManagement: React.FC = () => {
       </form>
       <ul className="mt-6 divide-y divide-gray-200">
         {fetching ? (
-          <li>
-            <Loading />
-          </li>
+          <Loading />
         ) : (
           categories.map((category) => (
             <li
@@ -137,7 +133,10 @@ const CategoryManagement: React.FC = () => {
               </span>
               <div>
                 <button
-                  onClick={() => setEditingCategory(category)}
+                  onClick={() => {
+                    setEditingCategory(category);
+                    setNewCategory(category.name);
+                  }}
                   className="mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Edit

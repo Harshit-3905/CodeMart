@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "./Loading";
+import { BACKEND_URL } from "../constants/api";
 
 interface Product {
   id: string;
@@ -12,8 +13,14 @@ interface Product {
   categoryId: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newProduct, setNewProduct] = useState<Partial<Product>>({});
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [fetching, setFetching] = useState(false);
@@ -21,20 +28,18 @@ const ProductManagement: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
     setFetching(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(
-        "http://localhost:8787/api/v1/products",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BACKEND_URL}/api/v1/products`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -42,8 +47,24 @@ const ProductManagement: React.FC = () => {
     setFetching(false);
   };
 
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axios.get(`${BACKEND_URL}/api/v1/category`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+    }
+  };
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     if (editingProduct) {
@@ -79,7 +100,7 @@ const ProductManagement: React.FC = () => {
 
       if (editingProduct) {
         await axios.put(
-          `http://localhost:8787/api/v1/admin/product/${editingProduct.id}`,
+          `${BACKEND_URL}/api/v1/admin/product/${editingProduct.id}`,
           formData,
           {
             headers: {
@@ -89,16 +110,12 @@ const ProductManagement: React.FC = () => {
           }
         );
       } else {
-        await axios.post(
-          "http://localhost:8787/api/v1/admin/product",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_URL}/api/v1/admin/product`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
       fetchProducts();
       setNewProduct({});
@@ -112,7 +129,7 @@ const ProductManagement: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`http://localhost:8787/api/v1/admin/product/${id}`, {
+      await axios.delete(`${BACKEND_URL}/api/v1/admin/product/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -217,16 +234,22 @@ const ProductManagement: React.FC = () => {
             htmlFor="categoryId"
             className="block text-sm font-medium text-gray-700"
           >
-            Category ID
+            Category
           </label>
-          <input
-            type="text"
+          <select
             id="categoryId"
             name="categoryId"
             value={editingProduct?.categoryId || newProduct.categoryId || ""}
             onChange={handleInputChange}
-            className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           type="submit"
