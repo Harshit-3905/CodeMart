@@ -19,12 +19,16 @@ export const createproductSchema = z.object({
   description: z.string(),
   price: z.string(),
   categoryId: z.string(),
+  stock: z.number(),
+  image: z.string(),
 });
 export const updateproductSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   price: z.string().optional(),
   categoryId: z.string().optional(),
+  stock: z.number().optional(),
+  image: z.string().optional(),
 });
 
 export type CreateProductSchema = z.infer<typeof createproductSchema>;
