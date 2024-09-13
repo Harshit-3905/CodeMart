@@ -28,7 +28,11 @@ function AppRoutes() {
       <Route
         path="/login"
         element={
-          isAuthenticated ? <Navigate to="/dashboard" /> : <AdminLogin />
+          isAuthenticated ? (
+            <Navigate to="/dashboard/products" />
+          ) : (
+            <AdminLogin />
+          )
         }
       />
       <Route
