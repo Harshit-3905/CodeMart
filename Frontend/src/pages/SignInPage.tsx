@@ -43,6 +43,11 @@ const SignInPage = () => {
     }
   };
 
+  const getGuestCrendentials = () => {
+    setEmail("guest@example.com");
+    setPassword("guest123");
+  };
+
   return (
     <div className="w-full min-h-[80vh] flex items-center justify-center bg-slate-600 text-white">
       <div className="flex flex-col bg-black p-5 gap-3 rounded-xl">
@@ -69,7 +74,7 @@ const SignInPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div className="flex justify-center pt-3">
+        <div className="flex flex-col justify-center pt-3 gap-2">
           <Button
             onClick={SignInHandler}
             disabled={loading}
@@ -80,6 +85,12 @@ const SignInPage = () => {
             ) : (
               "Sign In"
             )}
+          </Button>
+          <Button
+            onClick={getGuestCrendentials}
+            className="bg-green-700 w-[300px]"
+          >
+            Get Guest Credentials
           </Button>
         </div>
         <div className="flex justify-center">
