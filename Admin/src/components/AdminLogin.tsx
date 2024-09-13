@@ -23,6 +23,11 @@ const AdminLogin: React.FC = () => {
     setLoading(false);
   };
 
+  const handleGetAdminCredentials = () => {
+    setEmail("admin@codemart.com");
+    setPassword("admin123");
+  };
+
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-orange-500 p-8 rounded-lg shadow-md w-96">
@@ -73,6 +78,13 @@ const AdminLogin: React.FC = () => {
             {loading ? "Loading..." : "Login"}
           </button>
         </form>
+        <button
+          type="button"
+          className="w-full mt-3 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+          onClick={handleGetAdminCredentials}
+        >
+          Get Admin Credentials
+        </button>
       </div>
     </div>
   );
