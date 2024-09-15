@@ -13,6 +13,7 @@ const CategoryManagement: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchCategories();
@@ -95,9 +96,6 @@ const CategoryManagement: React.FC = () => {
 
   return (
     <div className="bg-orange-500 shadow overflow-hidden sm:rounded-lg p-6">
-      <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-        Category Management
-      </h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
@@ -126,37 +124,48 @@ const CategoryManagement: React.FC = () => {
             : "Add Category"}
         </button>
       </form>
+      <input
+        type="text"
+        placeholder="Search Categories"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mt-4 p-2 block w-full rounded-md border-gray-300 shadow-sm"
+      />
       <ul className="mt-6 flex flex-col gap-2">
         {fetching ? (
           <Loading />
         ) : (
-          categories.map((category) => (
-            <li
-              key={category.id}
-              className="py-2 flex justify-between items-center bg-white px-4"
-            >
-              <span className="text-md font-medium text-gray-900">
-                {category.name}
-              </span>
-              <div>
-                <button
-                  onClick={() => {
-                    setEditingCategory(category);
-                    setNewCategory(category.name);
-                  }}
-                  className="mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(category.id)}
-                  className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))
+          categories
+            .filter((category) =>
+              category.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((category) => (
+              <li
+                key={category.id}
+                className="py-2 flex justify-between items-center bg-white px-4"
+              >
+                <span className="text-md font-medium text-gray-900">
+                  {category.name}
+                </span>
+                <div>
+                  <button
+                    onClick={() => {
+                      setEditingCategory(category);
+                      setNewCategory(category.name);
+                    }}
+                    className="mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(category.id)}
+                    className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))
         )}
       </ul>
     </div>

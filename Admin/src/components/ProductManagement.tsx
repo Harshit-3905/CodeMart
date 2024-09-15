@@ -25,6 +25,7 @@ const ProductManagement: React.FC = () => {
   const [fetching, setFetching] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -159,9 +160,6 @@ const ProductManagement: React.FC = () => {
 
   return (
     <div className="bg-orange-500 shadow overflow-hidden sm:rounded-lg p-6">
-      <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-        Product Management
-      </h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
@@ -223,7 +221,7 @@ const ProductManagement: React.FC = () => {
             name="stock"
             value={editingProduct?.stock || newProduct.stock || ""}
             onChange={handleInputChange}
-            className="mt-1 p-2  block w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 p-2 block w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
@@ -279,57 +277,68 @@ const ProductManagement: React.FC = () => {
             : "Add Product"}
         </button>
       </form>
+      <input
+        type="text"
+        placeholder="Search Products"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mt-4 p-2 block w-full rounded-md border-gray-300 shadow-sm"
+      />
       <ul className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {fetching ? (
           <Loading />
         ) : (
-          products.map((product) => (
-            <li
-              key={product.id}
-              className="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200"
-            >
-              <div className="w-full flex items-center justify-between p-6 space-x-6">
-                <div className="flex-1 truncate">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="text-gray-900 text-sm font-medium truncate">
-                      {product.name}
-                    </h3>
-                    <span className="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">
-                      ${product.price}
-                    </span>
+          products
+            .filter((product) =>
+              product.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((product) => (
+              <li
+                key={product.id}
+                className="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200"
+              >
+                <div className="w-full flex items-center justify-between p-6 space-x-6">
+                  <div className="flex-1 truncate">
+                    <div className="flex items-center space-x-3">
+                      <h3 className="text-gray-900 text-sm font-medium truncate">
+                        {product.name}
+                      </h3>
+                      <span className="flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full">
+                        ${product.price}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-gray-500 text-sm truncate">
+                      {product.description}
+                    </p>
                   </div>
-                  <p className="mt-1 text-gray-500 text-sm truncate">
-                    {product.description}
-                  </p>
+                  <img
+                    className="w-20 h-20 bg-gray-300 rounded-full flex-shrink-0"
+                    src={product.image}
+                    alt={product.name}
+                  />
                 </div>
-                <img
-                  className="w-20 h-20 bg-gray-300 rounded-full flex-shrink-0"
-                  src={product.image}
-                  alt={product.name}
-                />
-              </div>
-              <div>
-                <div className="-mt-px flex divide-x divide-gray-200">
-                  <div className="w-0 flex-1 flex">
-                    <button
-                      onClick={() => setEditingProduct(product)}
-                      className="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <div className="-ml-px w-0 flex-1 flex">
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-red-700 font-medium border border-transparent rounded-br-lg hover:text-red-500"
-                    >
-                      Delete
-                    </button>
+                <div>
+                  <div className="-mt-px flex divide-x divide-gray-200">
+                    <div className="w-0 flex-1 flex">
+                      <button
+                        onClick={() => setEditingProduct(product)}
+                        className="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                    <div className="-ml-px w-0 flex-1 flex">
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-red-700 font-medium border border-transparent rounded-br-lg hover:text-red-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          ))
+              </li>
+            ))
         )}
       </ul>
     </div>
