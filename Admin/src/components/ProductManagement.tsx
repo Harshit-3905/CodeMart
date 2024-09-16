@@ -36,7 +36,7 @@ const ProductManagement: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axios.get(
-        `${import.meta.env.BACKEND_URL}/api/v1/products`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/products`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ const ProductManagement: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axios.get(
-        `${import.meta.env.BACKEND_URL}/api/v1/category`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,7 +107,7 @@ const ProductManagement: React.FC = () => {
 
       if (editingProduct) {
         await axios.put(
-          `${import.meta.env.BACKEND_URL}/api/v1/admin/product/${
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/product/${
             editingProduct.id
           }`,
           formData,
@@ -120,7 +120,7 @@ const ProductManagement: React.FC = () => {
         );
       } else {
         await axios.post(
-          `${import.meta.env.BACKEND_URL}/api/v1/admin/product`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/product`,
           formData,
           {
             headers: {
@@ -144,7 +144,7 @@ const ProductManagement: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
       await axios.delete(
-        `${import.meta.env.BACKEND_URL}/api/v1/admin/product/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/product/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

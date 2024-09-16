@@ -20,7 +20,7 @@ const SignInPage = () => {
     setError("");
     try {
       const response = await axios.post(
-        import.meta.env.BACKEND_URL + "/api/v1/user/login",
+        import.meta.env.VITE_BACKEND_URL + "/api/v1/user/login",
         {
           email,
           password,

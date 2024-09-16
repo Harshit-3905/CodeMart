@@ -23,7 +23,7 @@ const CategoryManagement: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axios.get(
-        `${import.meta.env.BACKEND_URL}/api/v1/category`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/category`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ const CategoryManagement: React.FC = () => {
       const token = localStorage.getItem("adminToken");
       if (editingCategory) {
         await axios.put(
-          `${import.meta.env.BACKEND_URL}/api/v1/admin/category/${
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/category/${
             editingCategory.id
           }`,
           { name: newCategory },
@@ -56,7 +56,7 @@ const CategoryManagement: React.FC = () => {
         );
       } else {
         await axios.post(
-          `${import.meta.env.BACKEND_URL}/api/v1/admin/category`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/category`,
           {
             name: newCategory,
           },
@@ -80,7 +80,7 @@ const CategoryManagement: React.FC = () => {
     try {
       const token = localStorage.getItem("adminToken");
       await axios.delete(
-        `${import.meta.env.BACKEND_URL}/api/v1/admin/category/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/category/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

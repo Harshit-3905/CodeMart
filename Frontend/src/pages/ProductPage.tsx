@@ -39,8 +39,8 @@ export default function Component() {
     const fetchData = async () => {
       try {
         const [productsResponse, categoriesResponse] = await Promise.all([
-          axios.get(import.meta.env.BACKEND_URL + "/api/v1/products"),
-          axios.get(import.meta.env.BACKEND_URL + "/api/v1/category"),
+          axios.get(import.meta.env.VITE_BACKEND_URL + "/api/v1/products"),
+          axios.get(import.meta.env.VITE_BACKEND_URL + "/api/v1/category"),
         ]);
 
         setProducts(productsResponse.data);
@@ -72,7 +72,7 @@ export default function Component() {
   const applyFilters = async () => {
     try {
       const response = await axios.get(
-        import.meta.env.BACKEND_URL + "/api/v1/products",
+        import.meta.env.VITE_BACKEND_URL + "/api/v1/products",
         {
           params: {
             categories: selectedCategories.join(","),

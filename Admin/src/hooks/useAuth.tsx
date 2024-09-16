@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.BACKEND_URL}/api/v1/admin/login`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/login`,
         {
           email,
           password,
