@@ -7,6 +7,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "@/constants/api";
+import LoadingPage from "./LoadingPage";
 
 interface Product {
   id: number;
@@ -37,19 +39,9 @@ export default function Component() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/signin");
-          return;
-        }
-
         const [productsResponse, categoriesResponse] = await Promise.all([
-          axios.get("http://localhost:8787/api/v1/products", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get("http://localhost:8787/api/v1/categories", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(BACKEND_URL + "/api/v1/products"),
+          axios.get(BACKEND_URL + "/api/v1/category"),
         ]);
 
         setProducts(productsResponse.data);
@@ -80,23 +72,13 @@ export default function Component() {
 
   const applyFilters = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/signin");
-        return;
-      }
-
-      const response = await axios.get(
-        "http://localhost:8787/api/v1/products",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            categories: selectedCategories.join(","),
-            minPrice: priceRange[0],
-            maxPrice: priceRange[1],
-          },
-        }
-      );
+      const response = await axios.get(BACKEND_URL + "/api/v1/products", {
+        params: {
+          categories: selectedCategories.join(","),
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+        },
+      });
 
       setProducts(response.data);
     } catch (error) {
@@ -106,15 +88,23 @@ export default function Component() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-[90vh] w-full flex items-center justify-center">
+        <LoadingPage />
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="min-h-[90vh] w-full flex items-center justify-center">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-[90vh] flex flex-col">
       <div className="flex-1 container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
           <aside className="w-full md:w-64 space-y-6">
