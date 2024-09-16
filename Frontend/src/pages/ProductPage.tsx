@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { BACKEND_URL } from "@/constants/api";
 import LoadingPage from "./LoadingPage";
 
 interface Product {
@@ -40,8 +39,8 @@ export default function Component() {
     const fetchData = async () => {
       try {
         const [productsResponse, categoriesResponse] = await Promise.all([
-          axios.get(BACKEND_URL + "/api/v1/products"),
-          axios.get(BACKEND_URL + "/api/v1/category"),
+          axios.get(import.meta.env.BACKEND_URL + "/api/v1/products"),
+          axios.get(import.meta.env.BACKEND_URL + "/api/v1/category"),
         ]);
 
         setProducts(productsResponse.data);
@@ -72,13 +71,16 @@ export default function Component() {
 
   const applyFilters = async () => {
     try {
-      const response = await axios.get(BACKEND_URL + "/api/v1/products", {
-        params: {
-          categories: selectedCategories.join(","),
-          minPrice: priceRange[0],
-          maxPrice: priceRange[1],
-        },
-      });
+      const response = await axios.get(
+        import.meta.env.BACKEND_URL + "/api/v1/products",
+        {
+          params: {
+            categories: selectedCategories.join(","),
+            minPrice: priceRange[0],
+            maxPrice: priceRange[1],
+          },
+        }
+      );
 
       setProducts(response.data);
     } catch (error) {

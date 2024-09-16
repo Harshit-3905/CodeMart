@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "./Loading";
-import { BACKEND_URL } from "../constants/api";
 
 interface Category {
   id: string;
@@ -23,11 +22,14 @@ const CategoryManagement: React.FC = () => {
     setFetching(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(`${BACKEND_URL}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.BACKEND_URL}/api/v1/category`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCategories(response.data);
     } catch (error) {
       console.error("Failed to fetch categories", error);
@@ -42,7 +44,9 @@ const CategoryManagement: React.FC = () => {
       const token = localStorage.getItem("adminToken");
       if (editingCategory) {
         await axios.put(
-          `${BACKEND_URL}/api/v1/admin/category/${editingCategory.id}`,
+          `${import.meta.env.BACKEND_URL}/api/v1/admin/category/${
+            editingCategory.id
+          }`,
           { name: newCategory },
           {
             headers: {
@@ -52,7 +56,7 @@ const CategoryManagement: React.FC = () => {
         );
       } else {
         await axios.post(
-          `${BACKEND_URL}/api/v1/admin/category`,
+          `${import.meta.env.BACKEND_URL}/api/v1/admin/category`,
           {
             name: newCategory,
           },
@@ -75,11 +79,14 @@ const CategoryManagement: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`${BACKEND_URL}/api/v1/admin/category/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.BACKEND_URL}/api/v1/admin/category/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       fetchCategories();
     } catch (error) {
       console.error("Failed to delete category", error);

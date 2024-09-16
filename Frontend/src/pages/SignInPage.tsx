@@ -6,7 +6,6 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { BACKEND_URL } from "@/constants/api";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -20,10 +19,13 @@ const SignInPage = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.post(BACKEND_URL + "/api/v1/user/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        import.meta.env.BACKEND_URL + "/api/v1/user/login",
+        {
+          email,
+          password,
+        }
+      );
       if (response.status === 200) {
         login(response.data.token);
         navigate("/products");

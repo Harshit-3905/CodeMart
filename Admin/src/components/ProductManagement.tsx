@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "./Loading";
-import { BACKEND_URL } from "../constants/api";
 
 interface Product {
   id: string;
@@ -36,11 +35,14 @@ const ProductManagement: React.FC = () => {
     setFetching(true);
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(`${BACKEND_URL}/api/v1/products`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.BACKEND_URL}/api/v1/products`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -51,11 +53,14 @@ const ProductManagement: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(`${BACKEND_URL}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.BACKEND_URL}/api/v1/category`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCategories(response.data);
     } catch (error) {
       console.error("Failed to fetch categories", error);
@@ -102,7 +107,9 @@ const ProductManagement: React.FC = () => {
 
       if (editingProduct) {
         await axios.put(
-          `${BACKEND_URL}/api/v1/admin/product/${editingProduct.id}`,
+          `${import.meta.env.BACKEND_URL}/api/v1/admin/product/${
+            editingProduct.id
+          }`,
           formData,
           {
             headers: {
@@ -112,12 +119,16 @@ const ProductManagement: React.FC = () => {
           }
         );
       } else {
-        await axios.post(`${BACKEND_URL}/api/v1/admin/product`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.post(
+          `${import.meta.env.BACKEND_URL}/api/v1/admin/product`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
       }
       fetchProducts();
       setNewProduct({});
@@ -132,11 +143,14 @@ const ProductManagement: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`${BACKEND_URL}/api/v1/admin/product/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.BACKEND_URL}/api/v1/admin/product/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       fetchProducts();
     } catch (error) {
       console.error("Failed to delete product", error);

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../constants/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -24,10 +23,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/v1/admin/login`, {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${import.meta.env.BACKEND_URL}/api/v1/admin/login`,
+        {
+          email,
+          password,
+        }
+      );
       const { token } = response.data;
       localStorage.setItem("adminToken", token);
       setIsAuthenticated(true);

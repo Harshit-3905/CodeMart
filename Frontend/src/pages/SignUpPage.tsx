@@ -6,7 +6,6 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { BACKEND_URL } from "@/constants/api";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -21,11 +20,14 @@ const SignUpPage = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.post(BACKEND_URL + "/api/v1/user/signup", {
-        name,
-        email,
-        password,
-      });
+      const response = await axios.post(
+        import.meta.env.BACKEND_URL + "/api/v1/user/signup",
+        {
+          name,
+          email,
+          password,
+        }
+      );
       if (response.status === 201) {
         login(response.data.token);
         navigate("/products");
