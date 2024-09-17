@@ -17,7 +17,8 @@ const uploadImage = async (
       body: formData,
     });
     const result: any = await response.json();
-    return result?.url;
+    console.log(result);
+    return result?.secure_url;
   } catch (error) {
     console.log("Error while uploading image!");
     return "";

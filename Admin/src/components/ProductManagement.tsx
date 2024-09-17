@@ -94,7 +94,6 @@ const ProductManagement: React.FC = () => {
       const token = localStorage.getItem("adminToken");
       const formData = new FormData();
       const productData = editingProduct || newProduct;
-      console.log(productData);
       Object.keys(productData).forEach((key) => {
         formData.append(
           key,

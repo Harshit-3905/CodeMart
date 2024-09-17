@@ -12,22 +12,24 @@ const AdminDashboard: React.FC = () => {
           <div className="flex justify-between h-16">
             <div className="flex space-x-4">
               <div className="flex-shrink-0 flex items-center">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                   Admin Dashboard
                 </h2>
               </div>
-              <Link
-                to="/dashboard/products"
-                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
-              >
-                Products
-              </Link>
-              <Link
-                to="/dashboard/categories"
-                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
-              >
-                Categories
-              </Link>
+              <div className="hidden sm:flex space-x-4">
+                <Link
+                  to="/dashboard/products"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                >
+                  Products
+                </Link>
+                <Link
+                  to="/dashboard/categories"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                >
+                  Categories
+                </Link>
+              </div>
             </div>
             <div className="flex items-center">
               <button
@@ -37,6 +39,20 @@ const AdminDashboard: React.FC = () => {
                 Logout
               </button>
             </div>
+          </div>
+          <div className="sm:hidden flex space-x-4 mt-2">
+            <Link
+              to="/dashboard/products"
+              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+            >
+              Products
+            </Link>
+            <Link
+              to="/dashboard/categories"
+              className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+            >
+              Categories
+            </Link>
           </div>
         </div>
       </nav>
